@@ -1,0 +1,4 @@
+praw>=7.7.1
+
+# Optional -- only needed if you run with --use-ai
+anthropic>=0.40.0

@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SF Bitches With Taste: A Recommendations Index</title>
+<meta name="description" content="An auto-updated, bucketized index of San Francisco recommendations pulled from r/sfbitcheswithtaste.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;0,900;1,600;1,900&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #EEEFE9;
+    --surface: #FFFFFF;
+    --ink: #171B1A;
+    --ink-soft: #5B5E54;
+    --ink-faint: #8A8D80;
+    --line: #D9DACD;
+    --accent: #C4185C;
+    --radius: 3px;
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+    --max-width: 780px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 60px 20px 24px;
+  }
+
+  .masthead-word {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-style: italic;
+    font-size: clamp(2.1rem, 6vw, 3.3rem);
+    letter-spacing: -0.01em;
+    margin: 0 0 14px;
+    line-height: 1.05;
+  }
+
+  .tagline {
+    max-width: 58ch;
+    margin: 0 0 20px;
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+  }
+
+  .stats-line, .updated-line {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--ink-faint);
+  }
+
+  .updated-line { margin-top: 2px; }
+
+  /* ---------- controls ---------- */
+
+  .controls {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--paper);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .controls-inner {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .cat-nav {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding: 4px 0 10px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  .nav-btn {
+    flex: none;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: var(--ink-faint);
+    padding: 7px 1px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .nav-btn:hover { color: var(--ink-soft); }
+
+  .nav-btn.active {
+    color: var(--ink);
+    border-bottom-color: var(--cat-color, var(--accent));
+  }
+
+  .search-sort-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0 14px;
+  }
+
+  .search-input {
+    flex: 1 1 240px;
+    min-width: 0;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 9px 12px;
+  }
+
+  .search-input::placeholder { color: var(--ink-faint); }
+
+  .sort-toggle {
+    flex: none;
+    display: flex;
+    gap: 2px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 2px;
+  }
+
+  .sort-btn {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--ink-faint);
+    background: none;
+    border: none;
+    border-radius: 2px;
+    padding: 6px 12px;
+    cursor: pointer;
+  }
+
+  .sort-btn.active {
+    color: var(--ink);
+    background: var(--paper);
+  }
+
+  /* ---------- content ---------- */
+
+  .content {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 28px 20px 80px;
+  }
+
+  .cat-section { margin-bottom: 44px; }
+  .cat-section:last-child { margin-bottom: 0; }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--cat-color, var(--ink));
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-style: normal;
+    font-size: 1.35rem;
+    margin: 0;
+    color: var(--cat-color, var(--ink));
+  }
+
+  .section-count {
+    font-size: 0.82rem;
+    color: var(--ink-faint);
+    white-space: nowrap;
+  }
+
+  .entry {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--cat-color, var(--ink-faint));
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    margin-bottom: 14px;
+  }
+
+  .entry-heading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 6px 16px;
+    margin-bottom: 6px;
+  }
+
+  .entry-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin: 0;
+    line-height: 1.35;
+  }
+
+  .entry-title a { text-decoration: none; }
+  .entry-title a:hover { text-decoration: underline; }
+
+  .entry-date {
+    flex: none;
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+  }
+
+  .entry-selftext {
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+    margin: 0 0 12px;
+  }
+
+  .entry-comments {
+    list-style: none;
+    margin: 0 0 8px;
+    padding: 0;
+  }
+
+  .comment {
+    background: var(--paper);
+    border-radius: 2px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+  }
+
+  .comment:last-child { margin-bottom: 0; }
+
+  .comment-body {
+    font-size: 0.93rem;
+    margin: 0 0 6px;
+  }
+
+  .comment-attrib {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0;
+    font-size: 0.76rem;
+    color: var(--ink-faint);
+  }
+
+  .entry-more { margin-bottom: 8px; }
+
+  .entry-more summary {
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--accent);
+    padding: 2px 0;
+  }
+
+  .entry-more .entry-comments { margin-top: 8px; }
+
+  .entry-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 6px 16px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+    font-size: 0.82rem;
+  }
+
+  .entry-score { color: var(--ink-faint); }
+
+  .entry-link {
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .entry-link:hover { text-decoration: underline; }
+
+  .empty-state {
+    color: var(--ink-soft);
+    font-size: 0.98rem;
+    padding: 20px 0;
+  }
+
+  /* ---------- footer ---------- */
+
+  .site-footer {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 20px 60px;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+    line-height: 1.6;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+  <header class="masthead">
+    <h1 class="masthead-word">SF Bitches With Taste</h1>
+    <p class="tagline">An auto-updated index of recommendations pulled from the subreddit's most-trusted threads: restaurants, doctors, tailors, and everything in between.</p>
+    <p class="stats-line" id="stats-line"></p>
+    <p class="updated-line" id="updated-line"></p>
+  </header>
+
+  <div class="controls">
+    <div class="controls-inner">
+      <nav class="cat-nav" id="cat-nav" aria-label="Categories"></nav>
+      <div class="search-sort-row">
+        <input type="search" id="search" class="search-input" placeholder="Search recommendations…" aria-label="Search recommendations">
+        <div class="sort-toggle" role="group" aria-label="Sort order">
+          <button type="button" class="sort-btn active" data-sort="top">Top</button>
+          <button type="button" class="sort-btn" data-sort="new">New</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main id="content" class="content"></main>
+
+  <footer class="site-footer">
+    <p>Unofficial and community-built, not affiliated with Reddit or the subreddit's moderators. Every entry links back to its original thread: go there to say thanks, ask a follow-up, or add your own recommendation.</p>
+  </footer>
+
+  <script id="sfbwt-data" type="application/json">__SFBWT_DATA__</script>
+  <script>
+  (function () {
+    "use strict";
+
+    var dataset = JSON.parse(document.getElementById('sfbwt-data').textContent);
+    var palette = ['#0F6B5C', '#B0501B', '#6A3E8C', '#9C7A12', '#39516B', '#3F6B33', '#A83258'];
+
+    dataset.categories.forEach(function (cat, i) {
+      cat.color = palette[i % palette.length];
+      cat.posts.forEach(function (p) { p._blob = searchBlob(p); });
+    });
+
+    var state = { category: 'all', query: '', sort: 'top' };
+
+    var navEl = document.getElementById('cat-nav');
+    var contentEl = document.getElementById('content');
+    var searchEl = document.getElementById('search');
+    var sortButtons = document.querySelectorAll('.sort-btn');
+
+    function searchBlob(post) {
+      var parts = [post.title, post.selftext].concat(
+        post.recommendations || [],
+        (post.top_comments || []).map(function (c) { return c.body; })
+      );
+      return parts.join(' ').toLowerCase();
+    }
+
+    function formatDate(unixSeconds, opts) {
+      var d = new Date(unixSeconds * 1000);
+      return d.toLocaleDateString(undefined, opts);
+    }
+
+    function renderStats() {
+      var meta = dataset.subreddit_meta || {};
+      var parts = [dataset.post_count + ' recommendation threads sorted into ' + dataset.categories.length + ' categories'];
+      if (meta.subscribers) {
+        parts.push("pulled from r/" + dataset.subreddit + "'s " + meta.subscribers.toLocaleString() + ' members');
+      }
+      document.getElementById('stats-line').textContent = parts.join(', ') + '.';
+
+      if (dataset.generated_at) {
+        var d = new Date(dataset.generated_at);
+        document.getElementById('updated-line').textContent =
+          'Last updated ' + d.toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' }) + '.';
+      }
+    }
+
+    function makeNavButton(id, label, count, color) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'nav-btn' + (state.category === id ? ' active' : '');
+      btn.dataset.cat = id;
+      if (color) btn.style.setProperty('--cat-color', color);
+      btn.textContent = label + ' (' + count + ')';
+      btn.addEventListener('click', function () {
+        state.category = id;
+        document.querySelectorAll('.nav-btn').forEach(function (b) {
+          b.classList.toggle('active', b.dataset.cat === id);
+        });
+        render();
+      });
+      return btn;
+    }
+
+    function renderNav() {
+      navEl.innerHTML = '';
+      navEl.appendChild(makeNavButton('all', 'All', dataset.post_count, null));
+      dataset.categories.forEach(function (cat) {
+        navEl.appendChild(makeNavButton(cat.id, cat.label, cat.posts.length, cat.color));
+      });
+    }
+
+    function buildComment(c) {
+      var li = document.createElement('li');
+      li.className = 'comment';
+
+      var body = document.createElement('p');
+      body.className = 'comment-body';
+      body.textContent = c.body;
+      li.appendChild(body);
+
+      var attrib = document.createElement('p');
+      attrib.className = 'comment-attrib';
+      var author = document.createElement('span');
+      author.textContent = 'u/' + c.author;
+      var score = document.createElement('span');
+      score.textContent = c.score + (c.score === 1 ? ' upvote' : ' upvotes');
+      attrib.appendChild(author);
+      attrib.appendChild(score);
+      li.appendChild(attrib);
+
+      return li;
+    }
+
+    function buildEntry(post, color) {
+      var article = document.createElement('article');
+      article.className = 'entry';
+      article.style.setProperty('--cat-color', color);
+
+      var heading = document.createElement('div');
+      heading.className = 'entry-heading';
+
+      var title = document.createElement('h3');
+      title.className = 'entry-title';
+      var titleLink = document.createElement('a');
+      titleLink.href = post.permalink;
+      titleLink.target = '_blank';
+      titleLink.rel = 'noopener';
+      titleLink.textContent = post.title;
+      title.appendChild(titleLink);
+      heading.appendChild(title);
+
+      var date = document.createElement('time');
+      date.className = 'entry-date';
+      date.textContent = formatDate(post.created_utc, { month: 'short', year: 'numeric' });
+      heading.appendChild(date);
+
+      article.appendChild(heading);
+
+      if (post.selftext) {
+        var p = document.createElement('p');
+        p.className = 'entry-selftext';
+        p.textContent = post.selftext;
+        article.appendChild(p);
+      }
+
+      var comments = post.top_comments || [];
+      if (comments.length) {
+        var list = document.createElement('ul');
+        list.className = 'entry-comments';
+        list.appendChild(buildComment(comments[0]));
+        article.appendChild(list);
+
+        if (comments.length > 1) {
+          var rest = comments.length - 1;
+          var details = document.createElement('details');
+          details.className = 'entry-more';
+          var summary = document.createElement('summary');
+          summary.textContent = rest + (rest === 1 ? ' more reply worth reading' : ' more replies worth reading');
+          details.appendChild(summary);
+          var restList = document.createElement('ul');
+          restList.className = 'entry-comments';
+          comments.slice(1).forEach(function (c) { restList.appendChild(buildComment(c)); });
+          details.appendChild(restList);
+          article.appendChild(details);
+        }
+      }
+
+      var footer = document.createElement('div');
+      footer.className = 'entry-footer';
+
+      var score = document.createElement('span');
+      score.className = 'entry-score';
+      score.textContent = post.score + (post.score === 1 ? ' upvote' : ' upvotes');
+      footer.appendChild(score);
+
+      var link = document.createElement('a');
+      link.className = 'entry-link';
+      link.href = post.permalink;
+      link.target = '_blank';
+      link.rel = 'noopener';
+      link.textContent = post.num_comments
+        ? 'See all ' + post.num_comments + (post.num_comments === 1 ? ' reply' : ' replies') + ' on Reddit'
+        : 'Open the thread on Reddit';
+      footer.appendChild(link);
+
+      article.appendChild(footer);
+      return article;
+    }
+
+    function render() {
+      contentEl.innerHTML = '';
+
+      var cats = state.category === 'all'
+        ? dataset.categories
+        : dataset.categories.filter(function (c) { return c.id === state.category; });
+
+      var shown = 0;
+
+      cats.forEach(function (cat) {
+        var posts = cat.posts;
+        if (state.query) {
+          posts = posts.filter(function (p) { return p._blob.indexOf(state.query) !== -1; });
+        }
+        if (!posts.length) return;
+
+        posts = posts.slice().sort(function (a, b) {
+          return state.sort === 'top' ? b.score - a.score : b.created_utc - a.created_utc;
+        });
+
+        shown += posts.length;
+
+        var section = document.createElement('section');
+        section.className = 'cat-section';
+
+        var header = document.createElement('div');
+        header.className = 'section-header';
+        header.style.setProperty('--cat-color', cat.color);
+        var h2 = document.createElement('h2');
+        h2.className = 'section-title';
+        h2.textContent = cat.label;
+        var count = document.createElement('span');
+        count.className = 'section-count';
+        count.textContent = posts.length + (posts.length === 1 ? ' thread' : ' threads');
+        header.appendChild(h2);
+        header.appendChild(count);
+        section.appendChild(header);
+
+        posts.forEach(function (p) { section.appendChild(buildEntry(p, cat.color)); });
+        contentEl.appendChild(section);
+      });
+
+      if (shown === 0) {
+        var empty = document.createElement('p');
+        empty.className = 'empty-state';
+        empty.textContent = state.query
+          ? 'No recommendations match "' + state.query + '". Try a different search, or clear it to see everything again.'
+          : 'No recommendations in this category yet.';
+        contentEl.appendChild(empty);
+      }
+    }
+
+    searchEl.addEventListener('input', function (e) {
+      state.query = e.target.value.trim().toLowerCase();
+      render();
+    });
+
+    sortButtons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        state.sort = btn.dataset.sort;
+        sortButtons.forEach(function (b) { b.classList.toggle('active', b === btn); });
+        render();
+      });
+    });
+
+    renderStats();
+    renderNav();
+    render();
+  })();
+  </script>
+
+</body>
+</html>
